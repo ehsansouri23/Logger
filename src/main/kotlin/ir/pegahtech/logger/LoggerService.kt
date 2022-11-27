@@ -5,7 +5,6 @@ import io.micrometer.core.instrument.DistributionSummary
 import io.micrometer.core.instrument.Meter
 import io.micrometer.core.instrument.MeterRegistry
 import io.micrometer.core.instrument.Timer
-import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import java.time.Duration
@@ -16,8 +15,7 @@ import kotlin.time.toJavaDuration
 @Service
 class LoggerService(
     private val adapters: List<LoggerAdapter>,
-) {
-    private val logger = LoggerFactory.getLogger(javaClass.simpleName)
+) : Logger {
 
     @Autowired
     private lateinit var meterRegistry: MeterRegistry
@@ -51,11 +49,22 @@ class LoggerService(
     fun <T> withTimeLogging(
         name: String,
         tags: Map<String, String> = emptyMap(),
-        action: () -> T
+        action: () -> T,
     ): T = measureTimedValue {
         action()
     }.let {
         timer(name, tags, it.duration.toJavaDuration())
         it.value
+    }
+
+    override fun invoke(log: Log) {
+        with(log) {
+            when (type) {
+                MetricType.Counter -> counter(name!!, tags!!, value!!)
+                MetricType.Histogram -> histogram(name!!, tags!!, value!!)
+                MetricType.Timer -> timer(name!!, tags!!, duration!!)
+                else -> {}
+            }
+        }
     }
 }
