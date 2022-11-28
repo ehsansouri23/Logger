@@ -1,7 +1,8 @@
-package ir.pegahtech.logger
+package ir.pegahtech.logger.adapters
 
 import io.micrometer.core.instrument.Meter
 import io.micrometer.core.instrument.MeterRegistry
+import ir.pegahtech.logger.MetricType
 import java.util.Locale
 
 interface LoggerAdapter {
@@ -30,6 +31,9 @@ interface LoggerAdapter {
                 .replace("-", "_")
                 .replace("\\.", "_");
         }
+
+        fun getAvailableAdapters():List<LoggerAdapter> =
+            listOf(CounterLoggerAdapter(), HistogramLoggerAdapter(), TimerLoggerAdapter())
     }
 }
 

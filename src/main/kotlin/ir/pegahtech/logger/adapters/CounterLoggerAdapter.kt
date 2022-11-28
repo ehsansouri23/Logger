@@ -1,11 +1,10 @@
-package ir.pegahtech.logger
+package ir.pegahtech.logger.adapters
 
 import io.micrometer.core.instrument.Counter
 import io.micrometer.core.instrument.Meter
 import io.micrometer.core.instrument.MeterRegistry
-import org.springframework.stereotype.Component
+import ir.pegahtech.logger.MetricType
 
-@Component
 class CounterLoggerAdapter : LoggerAdapter {
 
     override fun supported(metricType: MetricType): Boolean =

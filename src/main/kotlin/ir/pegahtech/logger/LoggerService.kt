@@ -5,22 +5,17 @@ import io.micrometer.core.instrument.DistributionSummary
 import io.micrometer.core.instrument.Meter
 import io.micrometer.core.instrument.MeterRegistry
 import io.micrometer.core.instrument.Timer
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.stereotype.Service
+import ir.pegahtech.logger.adapters.LoggerAdapter
 import java.time.Duration
 import kotlin.time.ExperimentalTime
 import kotlin.time.measureTimedValue
 import kotlin.time.toJavaDuration
 
-@Service
-class LoggerService(
-    private val adapters: List<LoggerAdapter>,
-) : Logger {
+object LoggerService : Logger {
 
-    @Autowired
+    private val adapters = LoggerAdapter.getAvailableAdapters()
     private lateinit var meterRegistry: MeterRegistry
 
-    @Autowired
     private lateinit var metricsRegistry: MetricsRegistry
 
     private fun getMeter(name: String, tags: Map<String, String>, type: MetricType): Meter =
