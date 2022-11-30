@@ -1,3 +1,5 @@
 package ir.pegahtech.logger
 
-interface Logger : (Log) -> Unit
+import io.micrometer.core.instrument.MeterRegistry
+
+interface Logger : (Log, MeterRegistry) -> Unit
