@@ -1,9 +1,6 @@
 package ir.pegahtech.logger
 
-import io.micrometer.core.instrument.MeterRegistry
-import ir.pegahtech.logger.di.meterRegistry
 import java.time.Duration
-import kotlin.reflect.typeOf
 
 data class Log(
     val name: String? = null,
