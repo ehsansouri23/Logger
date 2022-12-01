@@ -1,9 +1,7 @@
 package ir.pegahtech.logger
 
 import io.micrometer.core.instrument.*
-import org.springframework.stereotype.Component
 
-@Component("apiMetricsRegistry")
 class MetricsRegistry {
     private val registry: MutableMap<Pair<MetricType, String>, Meter> = HashMap()
 

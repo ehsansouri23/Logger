@@ -13,14 +13,26 @@ data class Log(
 val log: Log
     get() = Log()
 
-infix fun Log.withType(type: MetricType): Log =
-    copy(type = type)
+fun counterLog(log: () -> Log) {
+    LoggerService(log().copy(type = MetricType.Counter))
+}
+
+fun histogramLog(log: () -> Log) {
+    LoggerService(log().copy(type = MetricType.Counter))
+}
+
+fun timerLog(log: () -> Log) {
+    LoggerService(log().copy(type = MetricType.Timer))
+}
 
 infix fun Log.withName(name: String): Log =
     copy(name = name)
 
 infix fun Log.withTags(tags: Map<String, String>): Log =
     copy(tags = tags)
+
+infix fun Log.withTag(tag: () -> Pair<String, String>): Log =
+    copy(tags = tags?.plus(tag()) ?: mapOf(tag()))
 
 infix fun Log.withValue(value: Double): Log =
     copy(value = value)

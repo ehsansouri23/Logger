@@ -6,6 +6,7 @@ import io.micrometer.core.instrument.Meter
 import io.micrometer.core.instrument.MeterRegistry
 import io.micrometer.core.instrument.Timer
 import ir.pegahtech.logger.adapters.LoggerAdapter
+import ir.pegahtech.logger.di.meterRegistry
 import java.time.Duration
 import kotlin.time.ExperimentalTime
 import kotlin.time.measureTimedValue
@@ -14,7 +15,6 @@ import kotlin.time.toJavaDuration
 object LoggerService : Logger {
 
     private val adapters = LoggerAdapter.getAvailableAdapters()
-    private lateinit var meterRegistry: MeterRegistry
 
     private lateinit var metricsRegistry: MetricsRegistry
 
@@ -55,9 +55,9 @@ object LoggerService : Logger {
     override fun invoke(log: Log) {
         with(log) {
             when (type) {
-                MetricType.Counter -> counter(name!!, tags!!, value!!)
-                MetricType.Histogram -> histogram(name!!, tags!!, value!!)
-                MetricType.Timer -> timer(name!!, tags!!, duration!!)
+                MetricType.Counter -> counter( name!!, tags!!, value!!)
+                MetricType.Histogram -> histogram( name!!, tags!!, value!!)
+                MetricType.Timer -> timer( name!!, tags!!, duration!!)
                 else -> {}
             }
         }
