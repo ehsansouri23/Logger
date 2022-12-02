@@ -1,6 +1,7 @@
 package ir.pegahtech.logger
 
 import java.time.Duration
+import java.util.function.LongBinaryOperator
 
 data class Log(
     val name: String? = null,
@@ -8,6 +9,9 @@ data class Log(
     val type: MetricType? = null,
     val value: Double? = null,
     val duration: Duration? = null,
+    val publishPercentileHistogram: Boolean = true,
+    val minimumExpectedValue: Double? = null,
+    val maximumExpectedValue: Double? = null,
 )
 
 val log: Log
@@ -39,3 +43,12 @@ infix fun Log.withValue(value: Double): Log =
 
 infix fun Log.withDuration(duration: Duration): Log =
     copy(duration = duration)
+
+infix fun Log.publishPercentileHistogram(publish: Boolean): Log =
+    copy(publishPercentileHistogram = publish)
+
+infix fun Log.minimumExpectedValue(value:Double):Log =
+    copy(minimumExpectedValue = value)
+
+infix fun Log.maximumExpectedValue(value:Double):Log =
+    copy(maximumExpectedValue = value)

@@ -18,11 +18,16 @@ object LoggerService : Logger {
 
     private lateinit var metricsRegistry: MetricsRegistry
 
-    private fun getMeter(name: String, tags: Map<String, String>, type: MetricType): Meter =
+    private fun getMeter(
+        name: String,
+        tags: Map<String, String>,
+        type: MetricType,
+        otherAttributes: LoggerAdapter.Attributes? = null,
+    ): Meter =
         adapters.find { it.supported(MetricType.Counter) }?.let { adapter ->
             val (identifierName, identifierType) = adapter.getIdentifier(name, tags, type)
             metricsRegistry.get(identifierName, identifierType) ?: adapter.createNewMeter(
-                identifierName, meterRegistry, tags
+                identifierName, meterRegistry, tags, otherAttributes
             ).also {
                 metricsRegistry.add(name, it)
             }
@@ -32,8 +37,15 @@ object LoggerService : Logger {
         (getMeter(name, tags, MetricType.Counter) as Counter).increment(value)
     }
 
-    fun histogram(name: String, tags: Map<String, String> = emptyMap(), value: Double) {
-        (getMeter(name, tags, MetricType.Counter) as DistributionSummary).record(value)
+    fun histogram(
+        name: String,
+        tags: Map<String, String> = emptyMap(),
+        value: Double,
+        otherAttributes: LoggerAdapter.Attributes? = null,
+    ) {
+        (getMeter(name, tags, MetricType.Counter, otherAttributes) as DistributionSummary).record(
+            value
+        )
     }
 
     fun timer(name: String, tags: Map<String, String> = emptyMap(), value: Duration) {
@@ -55,9 +67,17 @@ object LoggerService : Logger {
     override fun invoke(log: Log) {
         with(log) {
             when (type) {
-                MetricType.Counter -> counter( name!!, tags!!, value!!)
-                MetricType.Histogram -> histogram( name!!, tags!!, value!!)
-                MetricType.Timer -> timer( name!!, tags!!, duration!!)
+                MetricType.Counter -> counter(name!!, tags!!, value!!)
+                MetricType.Histogram -> histogram(
+                    name!!, tags!!, value!!,
+                    LoggerAdapter.Attributes(
+                        publishPercentileHistogram,
+                        minimumExpectedValue,
+                        maximumExpectedValue
+                    )
+                )
+
+                MetricType.Timer -> timer(name!!, tags!!, duration!!)
                 else -> {}
             }
         }

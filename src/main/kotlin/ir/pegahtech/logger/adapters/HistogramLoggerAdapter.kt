@@ -13,11 +13,18 @@ class HistogramLoggerAdapter : LoggerAdapter {
     override fun createNewMeter(
         name: String,
         registry: MeterRegistry,
-        tags: Map<String, String>
+        tags: Map<String, String>,
+        otherAttributes: LoggerAdapter.Attributes?,
     ): Meter =
         DistributionSummary.builder(LoggerAdapter.escapeValue(name)).also {
             tags.forEach { (tagName, tagValue) ->
                 it.tag(LoggerAdapter.escapeValue(tagName), LoggerAdapter.escapeValue(tagValue))
+            }
+            otherAttributes?.let { attributes ->
+                if (attributes.publishPercentileHistogram)
+                    it.publishPercentileHistogram()
+                attributes.minimumExpectedValue?.let { minimumExpectedValue-> it.minimumExpectedValue(minimumExpectedValue) }
+                attributes.maximumExpectedValue?.let { maximumExpectedValue-> it.maximumExpectedValue(maximumExpectedValue) }
             }
         }.register(registry)
 }

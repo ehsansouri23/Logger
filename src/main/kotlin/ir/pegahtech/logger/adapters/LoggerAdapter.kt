@@ -12,11 +12,22 @@ interface LoggerAdapter {
     fun getIdentifier(
         name: String,
         tags: Map<String, String>,
-        type: MetricType
+        type: MetricType,
     ): Pair<String, MetricType> =
         getKey(name, tags) to type
 
-    fun createNewMeter(name: String, registry: MeterRegistry, tags: Map<String, String>): Meter
+    fun createNewMeter(
+        name: String,
+        registry: MeterRegistry,
+        tags: Map<String, String>,
+        otherAttributes: Attributes? = null,
+    ): Meter
+
+    data class Attributes(
+        val publishPercentileHistogram: Boolean = true,
+        val minimumExpectedValue: Double? = null,
+        val maximumExpectedValue: Double? = null,
+    )
 
     companion object {
         fun getKey(name: String, tags: Map<String, String>): String {
@@ -32,7 +43,7 @@ interface LoggerAdapter {
                 .replace("\\.", "_");
         }
 
-        fun getAvailableAdapters():List<LoggerAdapter> =
+        fun getAvailableAdapters(): List<LoggerAdapter> =
             listOf(CounterLoggerAdapter(), HistogramLoggerAdapter(), TimerLoggerAdapter())
     }
 }
