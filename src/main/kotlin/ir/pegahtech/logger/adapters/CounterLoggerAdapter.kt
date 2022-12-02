@@ -13,7 +13,8 @@ class CounterLoggerAdapter : LoggerAdapter {
     override fun createNewMeter(
         name: String,
         registry: MeterRegistry,
-        tags: Map<String, String>
+        tags: Map<String, String>,
+        otherAttributes: LoggerAdapter.Attributes?
     ): Meter =
         Counter.builder(LoggerAdapter.escapeValue(name)).also {
             tags.forEach { (tagName, tagValue) ->
