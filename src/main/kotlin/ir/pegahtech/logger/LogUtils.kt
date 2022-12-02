@@ -2,6 +2,9 @@ package ir.pegahtech.logger
 
 import java.time.Duration
 import java.util.function.LongBinaryOperator
+import kotlin.time.ExperimentalTime
+import kotlin.time.measureTimedValue
+import kotlin.time.toJavaDuration
 
 data class Log(
     val name: String? = null,
@@ -41,14 +44,18 @@ infix fun Log.withTag(tag: () -> Pair<String, String>): Log =
 infix fun Log.withValue(value: Double): Log =
     copy(value = value)
 
+@OptIn(ExperimentalTime::class)
+infix fun Log.withBlock(action: () -> Unit): Log =
+    copy(duration = measureTimedValue(action).duration.toJavaDuration())
+
 infix fun Log.withDuration(duration: Duration): Log =
     copy(duration = duration)
 
 infix fun Log.publishPercentileHistogram(publish: Boolean): Log =
     copy(publishPercentileHistogram = publish)
 
-infix fun Log.minimumExpectedValue(value:Double):Log =
+infix fun Log.minimumExpectedValue(value: Double): Log =
     copy(minimumExpectedValue = value)
 
-infix fun Log.maximumExpectedValue(value:Double):Log =
+infix fun Log.maximumExpectedValue(value: Double): Log =
     copy(maximumExpectedValue = value)
